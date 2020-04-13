@@ -26,7 +26,36 @@ A fungible representation of staking balances allows for the easy transfer of st
 
 ## Specification
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
-The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).
+
+### Interface:
+
+`Mint (owner, address)`
+-Deposit LPT (Or other eligible ERC-20) with a validator address. Staked by default.
+-Stakes LPT by calling the staking functions. 
+-Creates two underlying tokens that represent ownership: one is the staked LPT and the other receives tokens
+
+`Transfer()`
+`BalanceOf()`
+
+`Change-Validator()`
+-Change validator to new address
+-Optional function
+
+`Claim-Rewards()`
+-Claims any outstanding rewards by calling the appropriate function
+-Pays to the rewards token
+
+`Sell-Rewards()`
+-Use an AMM to convert rewards to stable coins 
+
+`Burn()`
+-Calls unstake.
+-Waits unbonding period (or until activated by an external caller)
+-Claims any outstanding rewards
+-Withdraws funds and returns to withdraw address
+
+### Views
+
 
 ## Rationale
 <!--The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.-->
