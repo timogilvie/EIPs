@@ -127,6 +127,16 @@ function unbondingPeriod() public view returns (uint)
 
 
 
+#### unbondBalanceOf
+
+Returns the unbonding information of an account with address `_owner`. Do we want to use timestamp here or block numbers for the tuple return value?
+
+``` js
+function unbondBalanceOf(address owner) public view returns (uint balance, uint initBlock, uint unbondedBlock)
+```
+
+
+
 #### mint
 
 Transfers `_value` amount of tokens from msg.sender to itself (contract), stakes the tokens transferred, and MUST fire the `MINT` event.
@@ -136,55 +146,44 @@ The function SHOULD `throw` if the message caller's account balance does not hav
 *Note* Mints of 0 values MUST be treated as normal mints and fire the `MINT` event.
 
 ``` js
-function mint(uint _value) public returns (bool success)
+function mint(uint value) public returns (bool success)
+```
+
+
+#### claimRewardsAndRestake
+
+Claims rewards for the pool and restakes them, and MUST fire the `claimRewardsAndRestake` event.
+
+OPTIONAL - This method is used to compound rewards on networks where it is required.
+
+
+``` js
+function claimRewardsAndRestake() public returns (bool success)
 ```
 
 
 
 #### unbond
 
-Begins the unbonding process for `amount` number of tokens, MUST return the number of blocks until the underlying tokens can be claimed, and MUST fire the `Unbond` event.
+Begins the unbonding process for `amount` number of tokens, and MUST fire the `Unbond` event. This method decrements the msg.sender's balanceOf, and updates their unbondBalanceOf with the proper information.
 
 
 ``` js
-function unbond(uint256 amount) public returns (bool success)
+function unbond(uint amount) public returns (bool success)
 ```
 
 
 
-#### burn
+#### claimUnderlying
+
+Attempts to withdraw the underlying token if the unbondBalanceOf amount is greater than the claim amount, and if the block is greater than or equal to the specified unbondedBlock.
 
 
 ``` js
-function burn(uint256 _value) public returns (bool success)
+function claimUnderlying(uint amount) public returns (bool success)
 ```
 
 
-
-`Mint (owner, address)`
--Deposit LPT (Or other eligible ERC-20) with a validator address. Staked by default.
--Stakes LPT by calling the staking functions. 
--Creates two underlying tokens that represent ownership: one is the staked LPT and the other receives tokens
-
-`Transfer()`
-`BalanceOf()`
-
-`Change-Validator()`
--Change validator to new address
--Optional function
-
-`Claim-Rewards()`
--Claims any outstanding rewards by calling the appropriate function
--Pays to the rewards token
-
-`Sell-Rewards()`
--Use an AMM to convert rewards to stable coins 
-
-`Burn()`
--Calls unstake.
--Waits unbonding period (or until activated by an external caller)
--Claims any outstanding rewards
--Withdraws funds and returns to withdraw address
 
 ## Rationale
 <!--The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.-->
