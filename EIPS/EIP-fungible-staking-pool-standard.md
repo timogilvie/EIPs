@@ -21,27 +21,25 @@ A number of Proof-of-Stake blockchains and scaling solutions have launched token
 The primary challenge in designing a standard fungible staking pool is that Proof-of-stake networks often have a rewards delay and an unbonding period. The rewards delay causes deposits to be unique until they are past the rewards delay (i.e. dependent on the deposit time), and the unbonding period causes the same problem at the end of the lifecycle. 
 
 ***Option A***  
-To address this challenge, our standard describes an optional ERC-721 extension for staked tokens under the rewards delay, a required ERC-20 extension for staked tokens earning rewards (fungible staking pool), and an optional ERC-721 extension for tokens in the unbonding period.
-
-*Pros*: Maximizes yield for the ERC-20 representation of the fungible staking pool.  
-*Cons*: Three different token representations. Extra work for integrations, wallets, developers.
-
-***Option B***  
-Here, we accept there is or may be a rewards delay, but don't differentiate whether an underlying token is earning rewards or not. New deposits will cause the pool's yield to drop because the underlying tokens aren't earning rewards until they have passed the rewards delay. Therefore all deposits are an ERC-20 representing the fungible staking pool.
+To address this challenge, we accept there is or may be a rewards delay, but don't differentiate whether an underlying token is earning rewards or not. New deposits will cause the pool's yield to drop because the underlying tokens aren't earning rewards until they have passed the rewards delay. Therefore all deposits are an ERC-20 representing the fungible staking pool.
 
 However, to unbond, we can optionally issue an ERC-721 to represent when someone has sent in their ERC-20 tokens to be unbonded.
 
-Pros: Easier to implement. Simpler to interact with. Better user experience from minting perspective.  
-Cons: Lower yield for ERC-20 representations of the fungible staking pool.
+*Pros*: Easier to implement. Simpler to interact with. Better user experience from minting perspective.  
+*Cons*: Lower yield for ERC-20 representations of the fungible staking pool.
+
+***Option B***  
+Here, our standard describes an optional ERC-721 extension for staked tokens under the rewards delay, a required ERC-20 extension for staked tokens earning rewards (fungible staking pool), and an optional ERC-721 extension for tokens in the unbonding period.
+
+*Pros*: Maximizes yield for the ERC-20 representation of the fungible staking pool.  
+*Cons*: Three different token representations. Extra work for integrations, wallets, developers.
 
 ## Motivation
 <!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
 The fungible representation of a staked token allows for it to earn yield and be transferable. This allows the fungible representation to be used in more sophisticed applications or dApps. For example, a fungible staked token can accumulate interest while also sitting in an automated market maker or lending protocol. Importantly, establishing this fungible representation in a standard EIP increases network effects across the ecosystem; rather than supporting numerous implementations developers and wallets can interact with one standard and ensure forwards and backward compability.
 
-## Specification
+## Specification - Option A
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
-
-The underlying 
 
 **MUST Follow [ERC-20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), In Addition to Methods Below**
 
@@ -58,6 +56,19 @@ function validator() public view returns (string)
 ```
 
 
+#### validatorFee - UINT??
+
+Returns the validator fee, as a percent of the staking rewards (yield earned) - e.g. `.10` to represent a 10% of rewards.
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+``` js
+function validatorFee() public view returns (uint)
+``` 
+
+
+
 #### yield - UINT??
 
 Returns the current staking yield - e.g. `.10` to represent a 10% staking yield.
@@ -72,6 +83,8 @@ but interfaces and other contracts MUST NOT expect these values to be present.
 function yield() public view returns (uint)
 ```
 
+
+
 #### exchangeRate
 
 Returns the exchange rate of the ERC-20 staked representation to the underlying token - e.g. `10` means the ERC-20 represents 10 of the underlying token.
@@ -85,7 +98,7 @@ function exchangeRate() public view returns (uint)
 
 
 
-#### rewardsDelay - Is this fixed?? 
+#### rewardsDelay - Is this fixed?? Do we want it?
 
 Returns the number of blocks before a staked token earns rewards - e.g. `10`.
 
@@ -116,15 +129,11 @@ function unbondingPeriod() public view returns (uint)
 
 #### mint
 
-##### Basics
 Transfers `_value` amount of tokens from msg.sender to itself (contract), stakes the tokens transferred, and MUST fire the `MINT` event.
 
 The function SHOULD `throw` if the message caller's account balance does not have enough tokens to spend.
 
 *Note* Mints of 0 values MUST be treated as normal mints and fire the `MINT` event.
-
-##### Implementation Description
-
 
 ``` js
 function mint(uint _value) public returns (bool success)
@@ -132,7 +141,7 @@ function mint(uint _value) public returns (bool success)
 
 
 
-#### Unbond
+#### unbond
 
 Begins the unbonding process for `amount` number of tokens, MUST return the number of blocks until the underlying tokens can be claimed, and MUST fire the `Unbond` event.
 
