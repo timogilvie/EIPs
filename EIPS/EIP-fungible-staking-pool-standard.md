@@ -18,11 +18,21 @@ A number of Proof-of-Stake blockchains and scaling solutions have launched token
 
 ## Abstract
 <!--A short (~200 word) description of the technical issue being addressed.-->
-This EIP extends both ERC-721 and ERC-20 to arrive at a standard interface for fungible staking pools. 
-
 The primary challenge in designing a standard fungible staking pool is that Proof-of-stake networks often have a rewards delay and an unbonding period. The rewards delay causes deposits to be unique until they are past the rewards delay (i.e. dependent on the deposit time), and the unbonding period causes the same problem at the end of the lifecycle. 
 
+***Option A***  
 To address this challenge, our standard describes an optional ERC-721 extension for staked tokens under the rewards delay, a required ERC-20 extension for staked tokens earning rewards (fungible staking pool), and an optional ERC-721 extension for tokens in the unbonding period.
+
+*Pros*: Maximizes yield for the ERC-20 representation of the fungible staking pool.  
+*Cons*: Three different token representations. Extra work for integrations, wallets, developers.
+
+***Option B***  
+Here, we accept there is or may be a rewards delay, but don't differentiate whether an underlying token is earning rewards or not. New deposits will cause the pool's yield to drop because the underlying tokens aren't earning rewards until they have passed the rewards delay. Therefore all deposits are an ERC-20 representing the fungible staking pool.
+
+However, to unbond, we can optionally issue an ERC-721 to represent when someone has sent in their ERC-20 tokens to be unbonded.
+
+Pros: Easier to implement. Simpler to interact with. Better user experience from minting perspective.  
+Cons: Lower yield for ERC-20 representations of the fungible staking pool.
 
 ## Motivation
 <!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
