@@ -14,7 +14,7 @@ requires: EIP-20
 
 ## Simple Summary
 <!--"If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the EIP.-->
-A number of new-generation POS blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles the staking logic. When locked in a staking smart contract, tokens lose their fungiblity status and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking derivatives which wrap tokens in a staking smart contract.
+A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking derivatives which wrap tokens in a staking smart contract.
 
 ## Abstract
 <!--A short (~200 word) description of the technical issue being addressed.-->
