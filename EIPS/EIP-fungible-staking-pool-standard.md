@@ -23,7 +23,7 @@ The primary challenge in designing a standard fungible staking pool is that Proo
 ***Option A***  
 To address this challenge, we accept there is or may be a rewards delay, but don't differentiate whether an underlying token is earning rewards or not. New deposits will cause the pool's yield to drop because the underlying tokens aren't earning rewards until they have passed the rewards delay. Therefore all deposits are an ERC-20 representing the fungible staking pool.
 
-However, to unbond, we can optionally issue an ERC-721 to represent when someone has sent in their ERC-20 tokens to be unbonded.
+On an unbond, we track the balance and timing for the owner who submited the action.
 
 *Pros*: Easier to implement. Simpler to interact with. Better user experience from minting perspective.  
 *Cons*: Lower yield for ERC-20 representations of the fungible staking pool.
