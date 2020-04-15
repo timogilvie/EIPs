@@ -14,20 +14,24 @@ requires: EIP-20
 
 ## Simple Summary
 <!--"If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the EIP.-->
-A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking pool which wrap tokens in a staking smart contract.
+A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking pools which wrap tokens in a staking smart contract.
 
 ## Abstract
 <!--A short (~200 word) description of the technical issue being addressed.-->
 This EIP extends both ERC-721 and ERC-20 to arrive at a standard interface for fungible staking pools. 
 
+The primary challenge in designing a standard fungible staking pool is that Proof-of-stake networks often have a rewards delay and an unbonding period. The rewards delay causes deposits to be unique until they are past the rewards delay (i.e. dependent on the deposit time), and the unbonding period causes the same problem at the end of the lifecycle. 
+
+To address this challenge, our standard describes an optional ERC-721 extension for staked tokens under the rewards delay, a required ERC-20 extension for staked tokens earning rewards (fungible staking pool), and an optional ERC-721 extension for tokens in the unbonding period.
+
 ## Motivation
 <!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
-The fungible representation of a staked token allows for it to earn yield and be transferable. This allows the fungible representation to be used in more sophisticed applications or dApps. For example, a fungible staked token can accumulate interest while also sitting in an automated market maker or lending protocol. Importantly, establishing this fungible representation in a standard increases network effects across the ecosystem; rather than supporting numerous implementations developers and wallets can interact with one standard and ensure forwards and backward compability.
+The fungible representation of a staked token allows for it to earn yield and be transferable. This allows the fungible representation to be used in more sophisticed applications or dApps. For example, a fungible staked token can accumulate interest while also sitting in an automated market maker or lending protocol. Importantly, establishing this fungible representation in a standard EIP increases network effects across the ecosystem; rather than supporting numerous implementations developers and wallets can interact with one standard and ensure forwards and backward compability.
 
 ## Specification
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
 
-When a ERC-20 token is minted 
+The underlying 
 
 **MUST Follow [ERC-20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), In Addition to Methods Below**
 
