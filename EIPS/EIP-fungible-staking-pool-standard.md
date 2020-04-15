@@ -1,6 +1,6 @@
 ---
 eip: <to be assigned>
-title: Fungible Staking Derivative
+title: Fungible Staking Pool Standard
 author: Tim Ogilvie @timogilvie, Sam Mitchell @samatstaked, Devan Purhar @dpurhar27
 discussions-to:
 status: Draft
@@ -14,11 +14,11 @@ requires: EIP-20
 
 ## Simple Summary
 <!--"If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the EIP.-->
-A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking derivatives which wrap tokens in a staking smart contract.
+A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of following a widely adopted standard. This EIP sets a standard for fungible staking pool which wrap tokens in a staking smart contract.
 
 ## Abstract
 <!--A short (~200 word) description of the technical issue being addressed.-->
-Implementation details here. Is it an extension of ERC-20 or ERC-777?
+This EIP extends both ERC-721 and ERC-20 to arrive at a standard interface for fungible staking pools. 
 
 ## Motivation
 <!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
@@ -27,7 +27,116 @@ The fungible representation of a staked token allows for it to earn yield and be
 ## Specification
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
 
-### Interface:
+When a ERC-20 token is minted 
+
+**MUST Follow [ERC-20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), In Addition to Methods Below**
+
+#### validator
+
+Returns the name of the validator - e.g. `"Staked"`.
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+
+``` js
+function validator() public view returns (string)
+```
+
+
+#### yield - UINT??
+
+Returns the current staking yield - e.g. `.10` to represent a 10% staking yield.
+
+***Notes*** 
+- Sometimes this will be an expected yield, sometimes it may be calculable directly. How do we want to approach this? We could use historical yield, sort of how uniswap v2 is using volume weighted price over time?
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+``` js
+function yield() public view returns (uint)
+```
+
+#### exchangeRate
+
+Returns the exchange rate of the ERC-20 staked representation to the underlying token - e.g. `10` means the ERC-20 represents 10 of the underlying token.
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+``` js
+function exchangeRate() public view returns (uint)
+```
+
+
+
+#### rewardsDelay - Is this fixed?? 
+
+Returns the number of blocks before a staked token earns rewards - e.g. `10`.
+
+***Notes*** 
+- If this isn't fixed it doesn't make sense
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+``` js
+function rewardsDelay() public view returns (uint8)
+```
+
+
+
+#### unbondingPeriod
+
+Returns the unbonding period of the staked token, in blocks. E.g. `100`.
+
+OPTIONAL - This method can be used to improve usability,
+but interfaces and other contracts MUST NOT expect these values to be present.
+
+``` js
+function unbondingPeriod() public view returns (uint)
+```
+
+
+
+#### mint
+
+##### Basics
+Transfers `_value` amount of tokens from msg.sender to itself (contract), stakes the tokens transferred, and MUST fire the `MINT` event.
+
+The function SHOULD `throw` if the message caller's account balance does not have enough tokens to spend.
+
+*Note* Mints of 0 values MUST be treated as normal mints and fire the `MINT` event.
+
+##### Implementation Description
+
+
+``` js
+function mint(uint _value) public returns (bool success)
+```
+
+
+
+#### Unbond
+
+Begins the unbonding process for `amount` number of tokens, MUST return the number of blocks until the underlying tokens can be claimed, and MUST fire the `Unbond` event.
+
+
+``` js
+function unbond(uint256 amount) public returns (bool success)
+```
+
+
+
+#### burn
+
+
+``` js
+function burn(uint256 _value) public returns (bool success)
+```
+
+
 
 `Mint (owner, address)`
 -Deposit LPT (Or other eligible ERC-20) with a validator address. Staked by default.
@@ -53,9 +162,6 @@ The fungible representation of a staked token allows for it to earn yield and be
 -Waits unbonding period (or until activated by an external caller)
 -Claims any outstanding rewards
 -Withdraws funds and returns to withdraw address
-
-### Views
-
 
 ## Rationale
 <!--The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.-->
