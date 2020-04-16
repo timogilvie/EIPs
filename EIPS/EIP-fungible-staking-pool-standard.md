@@ -14,11 +14,15 @@ requires: EIP-20
 
 ## Simple Summary
 <!--"If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the EIP.-->
-A number of Proof-of-Stake blockchains and scaling solutions have launched tokens on Ethereum. To stake in one of these networks, tokens are forwarded to a smart contract which handles staking logic. However, when the tokens are staked, and locked in a staking smart contract, tokens lose their fungiblity and the network effects of a widely adopted standard. This EIP sets a standard for fungible staking pools which wrap tokens in a staking smart contract.
+Staking ERC-20 tokens is increasingly popular. Staking usually means locking tokens into a smart contract in return for a reward or participation opportunity. But when those tokens are locked, they lose their fungiblity, can't be used as collateral in protocols like Maker, Compound, and Uniswap, and are no longer liquid. This EIP sets a standard for a fungible (is fungibility really possible?) staking token that restores these benefits by wrapping the staking activity in a smart contract.
 
 ## Abstract
 <!--A short (~200 word) description of the technical issue being addressed.-->
-The primary challenge in designing a standard fungible staking pool is that Proof-of-stake networks often have a rewards delay and an unbonding period. The rewards delay causes deposits to be unique until they are past the rewards delay (i.e. dependent on the deposit time), and the unbonding period causes the same problem at the end of the lifecycle. 
+One fungibility challenge is that staking can delay the delivery of rewards on initial bonding and they require an unbonding period if the user wishes to stop staking. Another challenge is that there is often a validator 
+
+The bonding delay causes deposits to be unique until they are past the rewards delay (i.e. dependent on the deposit time), and the unbonding period causes the same problem at the end of the lifecycle. 
+
+Consistency across  
 
 ***Option A***  
 To address this challenge, we accept there is or may be a rewards delay, but don't differentiate whether an underlying token is earning rewards or not. New deposits will cause the pool's yield to drop because the underlying tokens aren't earning rewards until they have passed the rewards delay. Therefore all deposits are an ERC-20 representing the fungible staking pool.
@@ -34,9 +38,14 @@ Here, our standard describes an optional ERC-721 extension for staked tokens und
 *Pros*: Maximizes yield for the ERC-20 representation of the fungible staking pool.  
 *Cons*: Three different token representations. Extra work for integrations, wallets, developers.
 
+***Option C***
+-There's a delay built into the Mint() and Burn() functions to account for any bonding or unbonding delays.  
+
+Second challenge is validator fungibility. There is risk associated with transfer of tokens with a different underlying validator. Need to solve this. 
+
 ## Motivation
 <!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
-The fungible representation of a staked token allows for it to earn yield and be transferable. This allows the fungible representation to be used in more sophisticed applications or dApps. For example, a fungible staked token can accumulate interest while also sitting in an automated market maker or lending protocol. Importantly, establishing this fungible representation in a standard EIP increases network effects across the ecosystem; rather than supporting numerous implementations developers and wallets can interact with one standard and ensure forwards and backward compability.
+Fungible representations of staked tokens expands the economic opportunity Ethereum can enable. Fungible/transferable staked tokens can allow owners to simultaneously earn staking rewards and supply the assets to an automated market maker like Uniswap or used as collateral in lending protocols like Compound or Maker. A standard EIP will increase Ethereum's network effects by providing developers and wallets with a standard that allows staking .
 
 ## Specification - Option A
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
@@ -101,7 +110,7 @@ function exchangeRate() public view returns (uint)
 
 
 #### rewardsDelay - Is this fixed?? Do we want it?
-
+- Should this be bondingDelay? Should it return a block number or time? 
 Returns the number of blocks before a staked token earns rewards - e.g. `10`.
 
 ***Notes*** 
@@ -205,7 +214,12 @@ The implementations must be completed before any EIP is given status "Final", bu
 
 ## Security Considerations
 <!--All EIPs must contain a section that discusses the security implications/considerations relevant to the proposed change. Include information that might be important for security discussions, surfaces risks and can be used throughout the life cycle of the proposal. E.g. include security-relevant design decisions, concerns, important discussions, implementation-specific guidance and pitfalls, an outline of threats and risks and how they are being addressed. EIP submissions missing the "Security Considerations" section will be rejected. An EIP cannot proceed to status "Final" without a Security Considerations discussion deemed sufficient by the reviewers.-->
+
 All EIPs must contain a section that discusses the security implications/considerations relevant to the proposed change. Include information that might be important for security discussions, surfaces risks and can be used throughout the life cycle of the proposal. E.g. include security-relevant design decisions, concerns, important discussions, implementation-specific guidance and pitfalls, an outline of threats and risks and how they are being addressed. EIP submissions missing the "Security Considerations" section will be rejected. An EIP cannot proceed to status "Final" without a Security Considerations discussion deemed sufficient by the reviewers.
+
+Validator security is critical. Need to address. 
+
+Using collateral in multiple places introduces more risk. Need to address that this will only be acceptable to Maker,  Compound, Uniswap if, and only if, they evaluate that risk and determine the right mechanisms for using tokenized stake as collateral.  
 
 ## Copyright
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
